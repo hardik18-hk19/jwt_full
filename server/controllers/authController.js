@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import userModel from "../models/user.model.js";
+import transporter from "../config/nodemailer.js";
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -31,6 +32,22 @@ export const register = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: email,
+      subject: "Welcome To HK Auth",
+      text: `Welcome to  my auth. Your Account has been created with email: ${email}`,
+    };
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      // console.log("✅ Email sent:", info.response);
+    } catch (err) {
+      console.error("❌ Email sending failed:", err.message);
+    }
+
+    return res.json({ success: true });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
