@@ -107,16 +107,16 @@ export const logout = async (req, res) => {
 
 export const verifyOtp = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const userId = req.userId || req.body?.userId;
 
     const user = await userModel.findById(userId);
 
-    if (user.isAccountVerified) {
+    if (!user.isAccountVerified) {
       return res.json({ success: false, error: "Account is Alreday Verified" });
     }
 
     const otp = String(Math.floor(100000 + Math.random(6) * 900000));
-    user.verifyOtp = otp;
+    user.verifyOTP = otp;
     user.verifyOTPexpireAt = Date.now() + 24 * 60 * 60 * 1000;
 
     await user.save();
@@ -134,6 +134,7 @@ export const verifyOtp = async (req, res) => {
     } catch (err) {
       console.error("❌ Email sending failed:", err.message);
     }
+
     return res.json({
       success: true,
       message: "Verification OTP sent on email",
@@ -145,7 +146,8 @@ export const verifyOtp = async (req, res) => {
 
 // Verify the email with otp sent
 export const verifyEmail = async (req, res) => {
-  const { userId, otp } = req.body;
+  const { otp } = req.body;
+  const userId = req.userId || req.body?.userId;
 
   if (!userId || !otp) {
     return res.json({ success: false, message: "Missing Details" });
@@ -158,7 +160,7 @@ export const verifyEmail = async (req, res) => {
       return res.json({ success: false, message: "User does not exist" });
     }
 
-    if (user.verifyOtp == "" || user.verifyOtp !== otp) {
+    if (user.verifyOTP == "" || user.verifyOTP !== otp) {
       return res.json({ success: false, message: "Wrong OTP!" });
     }
 
@@ -167,11 +169,11 @@ export const verifyEmail = async (req, res) => {
     }
 
     user.isAccountVerified = true;
-    user.verifyOtp = "";
+    user.verifyOTP = "";
     user.verifyOTPexpireAt = 0;
 
     user.save();
-    return res.json({ success: false, message: "Email Verified Successfully" });
+    return res.json({ success: true, message: "Email Verified Successfully" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
