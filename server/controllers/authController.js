@@ -242,3 +242,41 @@ export const sendPasswordResetOtp = async (req, res) => {
     });
   }
 };
+
+export const verifyPasswordReset = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.json({ success: false, message: "Missing Details" });
+  }
+
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "User does not exist" });
+    }
+
+    if (user.resetOtp == "" || user.resetOtp !== otp) {
+      return res.json({ success: false, message: "Wrong OTP!" });
+    }
+
+    if (user.resetOtpExpireAt < Date.now()) {
+      return res.json({ success: false, message: "OTP expired" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    user.resetOtp = "";
+    user.resetOtpExpireAt = 0;
+
+    user.save();
+    return res.json({
+      success: true,
+      message: "Password has been reset Successfully",
+    });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
