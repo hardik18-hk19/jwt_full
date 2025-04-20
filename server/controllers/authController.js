@@ -178,3 +178,67 @@ export const verifyEmail = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+
+export const isAuthenticated = async (req, res) => {
+  try {
+    return res.josn({
+      success: true,
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export const sendPasswordResetOtp = async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.json({
+      success: false,
+      error: "Email is required",
+    });
+  }
+  try {
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        error: "User not exists",
+      });
+    }
+
+    const otp = String(Math.floor(100000 + Math.random(6) * 900000));
+    user.resetOtp = otp;
+    user.resetOtpExpireAt = Date.now() + 15 * 60 * 1000;
+
+    await user.save();
+
+    const mailOptions = {
+      from: process.env.SENDER_EMAIL,
+      to: user.email,
+      subject: "OTP for Email Verification",
+      text: `OTP for reset password is ${otp}. It will expire in 15 minute.`,
+    };
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      // console.log("✅ Email sent:", info.response);
+    } catch (err) {
+      console.error("❌ Email sending failed:", err.message);
+    }
+
+    return res.json({
+      success: true,
+      message: "Paasword Reset OTP sent on email",
+    });
+  } catch (error) {
+    return res.json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
