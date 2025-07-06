@@ -63,13 +63,13 @@ export const login = async (req, res) => {
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      res.json({ success: false, message: "Invalid Email" });
+      return res.json({ success: false, message: "Invalid Email" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      res.json({ success: false, message: "Wrong Password" });
+      return res.json({ success: false, message: "Wrong Password" });
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -111,8 +111,8 @@ export const verifyOtp = async (req, res) => {
 
     const user = await userModel.findById(userId);
 
-    if (!user.isAccountVerified) {
-      return res.json({ success: false, error: "Account is Alreday Verified" });
+    if (user.isAccountVerified) {
+      return res.json({ success: false, error: "Account is Already Verified" });
     }
 
     const otp = String(Math.floor(100000 + Math.random(6) * 900000));
@@ -181,7 +181,7 @@ export const verifyEmail = async (req, res) => {
 
 export const isAuthenticated = async (req, res) => {
   try {
-    return res.josn({
+    return res.json({
       success: true,
     });
   } catch (error) {
