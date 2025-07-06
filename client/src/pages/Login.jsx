@@ -1,14 +1,62 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { AppContent } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  const { backendUrl, setIsLoggedIn } = useContext(AppContent);
 
   const [state, setState] = useState("Sign Up");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const onSubmitandler = async (e) => {
+    try {
+      e.preventDefault();
+
+      if (state === "Sign Up") {
+        const data = await axios.post(
+          backendUrl + "/api/auth/register",
+          {
+            name,
+            email,
+            password,
+          },
+          { withCredentials: true }
+        );
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        const data = await axios.post(
+          backendUrl + "/api/auth/login",
+          {
+            email,
+            password,
+          },
+          { withCredentials: true }
+        );
+
+        if (data.success) {
+          setIsLoggedIn(true);
+          navigate("/");
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-6 sm:px-0 bg-gradient-to-br from-blue-200 to-purple-400">
@@ -76,7 +124,10 @@ const Login = () => {
           >
             Forgot Password?
           </p>
-          <button className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900">
+          <button
+            className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900"
+            onClick={() => onSubmitandler()}
+          >
             {state}
           </button>
         </form>
