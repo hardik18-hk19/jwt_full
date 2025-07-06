@@ -30,11 +30,11 @@ const Login = () => {
           { withCredentials: true }
         );
 
-        if (data.success) {
+        if (data.data.success) {
           setIsLoggedIn(true);
           navigate("/");
         } else {
-          toast.error(data.message);
+          toast.error(data.data.message);
         }
       } else {
         const data = await axios.post(
@@ -46,11 +46,11 @@ const Login = () => {
           { withCredentials: true }
         );
 
-        if (data.success) {
+        if (data.data.success) {
           setIsLoggedIn(true);
           navigate("/");
         } else {
-          toast.error(data.message);
+          toast.error(data.data.message);
         }
       }
     } catch (error) {
@@ -76,7 +76,7 @@ const Login = () => {
             : "Login to your account"}
         </p>
 
-        <form>
+        <form onSubmit={onSubmitandler}>
           {state === "Sign Up" && (
             <div className="mb-4 flex items-center gap-3 w-full px-5 py-2.5 rounded-full bg-[#333A5C]">
               <img src={assets.person_icon} alt="" />
@@ -120,13 +120,13 @@ const Login = () => {
           </div>
           <p
             className="mb-4 text-indigo-500 cursor-pointer"
-            onClick={() => navigate("reset-password")}
+            onClick={() => navigate("/reset-password")}
           >
             Forgot Password?
           </p>
           <button
             className="w-full py-2.5 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-900"
-            onClick={() => onSubmitandler()}
+            type="submit"
           >
             {state}
           </button>
