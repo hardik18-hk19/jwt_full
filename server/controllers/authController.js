@@ -271,7 +271,7 @@ export const verifyPasswordReset = async (req, res) => {
     user.resetOtp = "";
     user.resetOtpExpireAt = 0;
 
-    user.save();
+    await user.save();
     return res.json({
       success: true,
       message: "Password has been reset Successfully",
