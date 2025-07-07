@@ -1,7 +1,17 @@
-import { useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { assets } from "../assets/assets";
+import { AppContent } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const EmailVerify = () => {
+  axios.defaults.withCredentials = true;
+
+  const navigate = useNavigate();
+
+  const { backendUrl, isLoggedIn, userData, getUserData } =
+    useContext(AppContent);
   const inputRefs = useRef([]);
 
   const handleInput = (e, index) => {
@@ -25,6 +35,32 @@ const EmailVerify = () => {
       }
     });
   };
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      const otpArray = inputRefs.current.map((e) => e.value);
+      const otp = otpArray.join("");
+
+      const { data } = await axios.post(
+        backendUrl + "/api/auth/verify-account",
+        { otp }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getUserData();
+        navigate("/");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    isLoggedIn && userData && userData.isAccountVerified && navigate("/");
+  }, [isLoggedIn, userData, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-200 to-purple-400 ">
@@ -32,8 +68,12 @@ const EmailVerify = () => {
         src={assets.logo}
         alt=""
         className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"
+        onClick={() => navigate("/")}
       />
-      <form className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-slate-900 p-8 rounded-lg shadow-lg w-96 text-sm"
+      >
         <h1 className="text-white text-2xl font-semibold text-center mb-4">
           Email Verify OTP
         </h1>
@@ -56,7 +96,10 @@ const EmailVerify = () => {
               />
             ))}
         </div>
-        <button className="w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full">
+        <button
+          type="submit"
+          className="w-full py-3 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full"
+        >
           Verify Email
         </button>
       </form>
