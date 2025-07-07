@@ -30,16 +30,6 @@ export const register = async (req, res) => {
       expiresIn: "7d",
     });
 
-    console.log("🍪 [REGISTER] Setting cookie with config:", {
-      httpOnly: true,
-      secure: true, // Always true for production deployment
-      sameSite: "none", // Always none for cross-origin
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
-      environment: process.env.NODE_ENV,
-      actuallyUsing: { secure: true, sameSite: "none" },
-    });
-
     res.cookie("token", token, {
       httpOnly: true,
       secure: true, // Force secure for cross-origin
