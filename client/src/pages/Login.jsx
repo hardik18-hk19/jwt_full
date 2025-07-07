@@ -48,10 +48,12 @@ const Login = () => {
         );
 
         if (data.data.success) {
+          console.log("✅ Login successful");
           setIsLoggedIn(true);
           getUserData();
           navigate("/");
         } else {
+          console.log("❌ Login failed:", data.data.message);
           toast.error(data.data.message);
         }
       }
