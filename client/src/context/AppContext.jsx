@@ -29,18 +29,34 @@ export const AppContextProvider = (props) => {
     try {
       console.log("🔍 Checking auth state...");
       console.log("🌐 Backend URL:", backendUrl);
+
+      // First test the debug endpoint to see cookies
+      try {
+        const debugResponse = await axios.get(
+          backendUrl + "/api/auth/debug-cookies",
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("🍪 Debug cookies response:", debugResponse.data);
+      } catch (debugError) {
+        console.log("❌ Debug endpoint failed:", debugError.message);
+      }
+
       const { data } = await axios.get(backendUrl + "/api/auth/is-auth", {
         withCredentials: true,
       });
       console.log("Auth response:", data);
       console.log("Auth response type:", typeof data);
       console.log("Auth response success:", data?.success);
+      console.log("Auth response message:", data?.message);
 
       if (data && data.success) {
         setIsLoggedIn(true);
         getUserData();
       } else {
         console.log("❌ Auth failed - not logged in");
+        console.log("❌ Server message:", data?.message);
         setIsLoggedIn(false);
       }
     } catch (error) {
