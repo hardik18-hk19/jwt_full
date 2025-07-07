@@ -32,17 +32,18 @@ export const register = async (req, res) => {
 
     console.log("🍪 [REGISTER] Setting cookie with config:", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true, // Always true for production deployment
+      sameSite: "none", // Always none for cross-origin
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
       environment: process.env.NODE_ENV,
+      actuallyUsing: { secure: true, sameSite: "none" },
     });
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true, // Force secure for cross-origin
+      sameSite: "none", // Force none for cross-origin
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
@@ -67,8 +68,8 @@ export const register = async (req, res) => {
         tokenSet: true,
         environment: process.env.NODE_ENV,
         cookieConfig: {
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          secure: true,
+          sameSite: "none",
         },
       },
     });
@@ -102,17 +103,18 @@ export const login = async (req, res) => {
 
     console.log("🍪 [LOGIN] Setting cookie with config:", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true, // Always true for production deployment
+      sameSite: "none", // Always none for cross-origin
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
       environment: process.env.NODE_ENV,
+      actuallyUsing: { secure: true, sameSite: "none" },
     });
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true, // Force secure for cross-origin
+      sameSite: "none", // Force none for cross-origin
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
@@ -124,8 +126,8 @@ export const login = async (req, res) => {
         tokenSet: true,
         environment: process.env.NODE_ENV,
         cookieConfig: {
-          secure: process.env.NODE_ENV === "production",
-          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+          secure: true,
+          sameSite: "none",
         },
       },
     });
@@ -138,8 +140,8 @@ export const logout = async (req, res) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      secure: true, // Force secure for cross-origin
+      sameSite: "none", // Force none for cross-origin
       path: "/",
     });
 
