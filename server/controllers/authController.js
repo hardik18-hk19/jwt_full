@@ -30,6 +30,15 @@ export const register = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.log("🍪 [REGISTER] Setting cookie with config:", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+      environment: process.env.NODE_ENV,
+    });
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -52,7 +61,17 @@ export const register = async (req, res) => {
       console.error("❌ Email sending failed:", err.message);
     }
 
-    return res.json({ success: true });
+    return res.json({
+      success: true,
+      debug: {
+        tokenSet: true,
+        environment: process.env.NODE_ENV,
+        cookieConfig: {
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        },
+      },
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -81,6 +100,15 @@ export const login = async (req, res) => {
       expiresIn: "7d",
     });
 
+    console.log("🍪 [LOGIN] Setting cookie with config:", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+      environment: process.env.NODE_ENV,
+    });
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -88,7 +116,19 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
-    return res.json({ success: true });
+
+    // Also send token in response for debugging
+    return res.json({
+      success: true,
+      debug: {
+        tokenSet: true,
+        environment: process.env.NODE_ENV,
+        cookieConfig: {
+          secure: process.env.NODE_ENV === "production",
+          sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+        },
+      },
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
