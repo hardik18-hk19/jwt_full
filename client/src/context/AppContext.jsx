@@ -10,6 +10,17 @@ export const AppContextProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(false);
 
+  const getUserData = useCallback(async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/user/data", {
+        withCredentials: true,
+      });
+      data.success ? setUserData(data.userData) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }, [backendUrl]);
+
   const getAuthState = useCallback(async () => {
     try {
       console.log("🔍 Checking auth state...");
@@ -29,17 +40,6 @@ export const AppContextProvider = (props) => {
       toast.error(error.response?.data?.message || error.message);
     }
   }, [backendUrl, getUserData]);
-
-  const getUserData = useCallback(async () => {
-    try {
-      const { data } = await axios.get(backendUrl + "/api/user/data", {
-        withCredentials: true,
-      });
-      data.success ? setUserData(data.userData) : toast.error(data.message);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }, [backendUrl]);
 
   useEffect(() => {
     getAuthState();
