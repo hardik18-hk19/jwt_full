@@ -58,6 +58,12 @@ const Navbar = () => {
               )}
               <li
                 className="py-1 px-2 hover:bg-gray-200 cursor-pointer"
+                onClick={() => navigate("/reset-password")}
+              >
+                Reset Password
+              </li>
+              <li
+                className="py-1 px-2 hover:bg-gray-200 cursor-pointer"
                 onClick={logout}
               >
                 Logout
