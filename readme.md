@@ -266,7 +266,7 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 
 **Hardik** - _Full Stack Developer_
 
-- Email: ha18.hk19@gmail.com
+- Email: work18.hk19@gmail.com
 - GitHub: [@hardik18-hk19](https://github.com/hardik18-hk19)
 
 ## 🙏 Acknowledgments
